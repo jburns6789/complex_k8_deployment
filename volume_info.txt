@@ -1,0 +1,25 @@
+pvc:
+persistent volume claim
+
+volume overview:
+some type of mechanism that allows a container to access a filesystem outside itself
+data in the pod isnt stored any where, if it crashes or needs to be recreated then the data is lost
+volumes solve this:
+the volume will exist on the "host machine"
+
+you dont want to spin up multipe replicas of postgres or any other DB and have them write to the
+same volume ---> bad practice, will cause many issues and probelms
+
+volume in the world of k8s:
+an object that allows a container to store data at the pod level
+
+k8 volume is tied directly to a very specific pod, can be accessed by any container in the pod
+downside, if is there is an issue w/ the pod, the volume goes away.
+not appropriate for storing data per issues of loss
+
+persistent volume exists outside of the pods and completely independant 
+if there is an issue with the pod the data will be saved and still can be accessed
+
+persistent volume claim
+pod configurations ---> kubernetes ---> statically provisioned persistent volume(immediatly avaiable) or
+---> dynamically provisioned persistent volume(needs to be create to meet your request)
