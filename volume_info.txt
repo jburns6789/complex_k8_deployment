@@ -23,3 +23,21 @@ if there is an issue with the pod the data will be saved and still can be access
 persistent volume claim
 pod configurations ---> kubernetes ---> statically provisioned persistent volume(immediatly avaiable) or
 ---> dynamically provisioned persistent volume(needs to be create to meet your request)
+
+remember a volume claim is not an instance of storage
+a volume claim is something that is going to be attached to a volume config
+pods config goes to kubernetes and looks for statically or dynamically provisioned volumes
+
+volume claim has to be setup for the postgres to store data in
+
+access modes: 3 types
+ReadWriteOnce, can only be used by a single node
+ReadOnlyMany, multiple nodes can read from
+ReadWriteMany, can be read and written to by many nodes
+
+kubectl get stroageclass
+kubectl describe stotageclass
+many many options in the cloud, has to be defined in the config file, used the default with the provider
+
+
+

@@ -8,6 +8,9 @@ kubectl apply -f k8s
 kubectl get deployments
 kubectl get services
 
+kubectl get storageclass
+kubectl describe stotageclass
+
 k8s version
 one config file for each object
 
