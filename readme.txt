@@ -4,12 +4,17 @@ docker-compose -f docker-compose-dev.yml up --build
 docker-compose -f docker-compose-dev.yml down
 
 kubectl delete <object type> <name of object>
+kubectl delete -f <folder> kubectl delete -f k8s/
 kubectl apply -f k8s
 kubectl get deployments
 kubectl get services
 
 kubectl get storageclass
 kubectl describe stotageclass
+
+pull logs using kubectl cli:
+kubectl logs <pod name>
+kubectl logs server-deployment-78df9887cc-csr6q
 
 k8s version
 one config file for each object
@@ -37,6 +42,9 @@ naming is super important
 pull logs using kubectl cli:
 kubectl logs <pod name>
 kubectl logs server-deployment-78df9887cc-csr6q
+
+defining environment variables
+environment variables are urls to the passwords
 
 
 
