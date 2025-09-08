@@ -1,0 +1,54 @@
+The Ingress Controller: The Traffic Director Inside the Cluster
+An Ingress Controller's purpose is to act as a smart reverse proxy and traffic manager for your 
+entire Kubernetes cluster. Think of it as the single, public-facing front door for all your 
+applications.
+Instead of exposing every single one of your services to the outside world, you expose only 
+the Ingress Controller. It then reads a set of rules (called Ingress resources) and intelligently 
+routes incoming requests to the correct internal service.
+
+The minikube tunnel: The Bridge to the Cluster
+The minikube tunnel command serves a completely different purpose, specific to local development 
+with Minikube.
+
+traffic ---> ingress service ---> clusterIP service --> Deployment
+
+load balancer
+legacy way of getting network traffic into a cluster
+
+ATTENTION!!!
+use ingress-nginx k8 community led
+github.com/kubernetes/ingress-nginx <--- use this one
+
+not 
+
+kubernetes-ingress: which is led by nginx
+github.com/nginxinc/kubernetes-ingress
+
+ingress configuration is different based on which cloud provider your using, can be significant variations
+
+3 seperate "things":
+something that accepts incoming traffic <--- ingress controller <--- ingress config
+
+our config will be configured as:
+something that accepts incoming traffic + ingress controller <--- ingress config
+these are combined
+
+cloud native load balancers are usually create to assist w/ traffic flow
+default backend will be created for healthcheacks and monitoring, configure to point to your backend
+
+ingress controller install using docker desktop with k8 turned on,
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.2/deploy/static/provider/cloud/deploy.yaml
+
+minikube stop
+minikube delete
+minikube start --cpus=4 --memory=4096
+minikube addons enable ingress
+
+minikube addons disable ingress
+kubectl delete namespace ingress-nginx
+
+kubectl get pods -n ingress-nginx <--- verify the pods are running 
+
+in an open and seperate terminal: minikube tunnel
+
+
