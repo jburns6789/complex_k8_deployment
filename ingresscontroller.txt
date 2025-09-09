@@ -1,3 +1,7 @@
+Docker desktop users access application at local host
+minikube ip ---> this ip address will have the application
+dont need to specify a port
+
 The Ingress Controller: The Traffic Director Inside the Cluster
 An Ingress Controller's purpose is to act as a smart reverse proxy and traffic manager for your 
 entire Kubernetes cluster. Think of it as the single, public-facing front door for all your 
@@ -9,6 +13,9 @@ routes incoming requests to the correct internal service.
 The minikube tunnel: The Bridge to the Cluster
 The minikube tunnel command serves a completely different purpose, specific to local development 
 with Minikube.
+
+If you delete and recreate your cluster you must recreate the ingress service and the postgres
+password
 
 traffic ---> ingress service ---> clusterIP service --> Deployment
 
@@ -50,5 +57,10 @@ kubectl delete namespace ingress-nginx
 kubectl get pods -n ingress-nginx <--- verify the pods are running 
 
 in an open and seperate terminal: minikube tunnel
+run minikube tunnel
 
+When creating the ingress rules:
+defining paths:
+any request with just a /, the triffic will be routed to client-cluster-ip-service
+any request with /api/, the traffic will be routed to server-cluster-ip-service
 
