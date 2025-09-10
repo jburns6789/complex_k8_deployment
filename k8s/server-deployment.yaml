@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: server-deployment
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       component: server
@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: server
-          image: cygnetops/multi-server-pgfix-5-11
+          #image: cygnetops/multi-server-pgfix-5-11
+          image: us-central1-docker.pkg.dev/micro-pilot-471618-g5/k8multicontainer/multi-server:latest
           ports:
             - containerPort: 5000
           env: 
@@ -35,3 +36,7 @@ spec:
                 secretKeyRef:
                   name: pgpassword
                   key: PGPASSWORD
+          resources:
+            requests:
+              cpu: "250m" # Request 0.25 of a CPU core
+              memory: "64Mi" # Request 64 Megabytes of RAM

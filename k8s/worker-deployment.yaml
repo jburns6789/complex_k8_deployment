@@ -14,9 +14,14 @@ spec:
     spec:
       containers:
         - name: worker
-          image: stephengrider/multi-worker
+          #image: stephengrider/multi-worker
+          image: us-central1-docker.pkg.dev/micro-pilot-471618-g5/k8multicontainer/multi-worker:latest
           env: 
             - name: REDIS_HOST
               value: redis-cluster-ip-service
             - name: REDIS_PORT
               value: '6379'
+      resources:
+            requests:
+              cpu: "250m" # Request 0.25 of a CPU core
+              memory: "64Mi" # Request 64 Megabytes of RAM
