@@ -1,0 +1,79 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches: "master"
+  pull_request:
+    branches: "master"
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' # Or your preferred Node.js version
+          cache: 'npm'
+
+      - name: Install dependencies
+        # This assumes a root package.json. If each service has its own,
+        # you may need separate 'npm ci' commands for each directory.
+        run: npm ci
+
+      - name: Run tests
+        # This runs the test script from your package.json
+        run: npm test
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Auth with GC
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run:  gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push client image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./client
+          file: ./client/Dockerfile.dev # Assuming you use a dev Dockerfile
+          push: true
+          tags: us-central1-docker.pkg.dev/micro-pilot-471618-g5/k8multicontainer/multi-client:latest
+
+      - name: Build and push server image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: true
+          tags: us-central1-docker.pkg.dev/micro-pilot-471618-g5/k8multicontainer/multi-server:latest
+
+      - name: Build and push worker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./worker
+          push: true
+          tags: us-central1-docker.pkg.dev/micro-pilot-471618-g5/k8multicontainer/multi-worker:latest
+
+      - name: Deploy to GKE
+        run: |
+          gcloud container clusters get-credentials multi-container-cluster --zone us-central1 --project micro-pilot-471618-g5
+          kubectl apply -f k8s/
+          kubectl rollout restart deployment/server-deployment
+          kubectl rollout restart deployment/client-deployment
+          kubectl rollout restart deployment/worker-deployment

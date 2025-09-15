@@ -1,0 +1,65 @@
+check to see if your still logged into google cloud gcloud auth list
+
+in k8s on google cloud:
+have to activate the google cli, shell into your project
+you have to get your completed images from your local machine and push to a repostory gc can access, 
+use the cli to change from ypur local env to the gc env
+
+apply the new settings and debug
+you have to go through the secrets process every time a new cluster is created or deleted and recreated
+
+kubectl create secret generic pgpassword --from-literal PGPASSWORD=your-postgres-password
+
+ingress needs to be configured once you migrate:
+kubectl get service -n ingress-nginx
+
+if resources arent allocated, it will need to be deployment
+
+delete a hanging pod:
+kubectl delete pod <pod-name> --grace-period=0 --force
+
+How to push/deplo changes made from the dev environment:
+make changes
+rebuild docker image 
+docker build -t complex-gh2-api:latest .
+
+tag the image for google artifact registry
+docker tag complex-gh2-api:latest us-central1-docker.pkg.dev/micro-pilot-471618-g5/k8multicontainer/multi-server:latest
+
+push the image
+docker push us-central1-docker.pkg.dev/micro-pilot-471618-g5/k8multicontainer/multi-server:latest
+
+apply the changes:
+in vs code while the project is running in gc
+kubectl apply -f k8s/server-deployment.yaml
+
+
+this is the old ingress service file:
+
+the google version will be updated in git
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: client-cluster-ip-service
+                port:
+                  number: 3000
+          - path: /api/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: server-cluster-ip-service
+                port:
+                  number: 5000
