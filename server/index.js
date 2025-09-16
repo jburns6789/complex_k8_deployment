@@ -66,6 +66,10 @@ app.post("/api/values", async (req, res) => {
   res.send({ working: true });
 });
 
-app.listen(5000, (err) => {
-  console.log("Listening");
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(5000, (err) => {
+    console.log("Listening");
+  });
+}
+
+module.exports = app;

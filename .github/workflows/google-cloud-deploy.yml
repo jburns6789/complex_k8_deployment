@@ -18,19 +18,35 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x' # Or your preferred Node.js version
+          node-version: '20.x'
           cache: 'npm'
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+            worker/package-lock.json
+      
+      - name: Install Client Dependencies and Test
+        run: |
+          cd client
+          npm ci
+          npm test
 
-      - name: Install dependencies
-        # This assumes a root package.json. If each service has its own,
-        # you may need separate 'npm ci' commands for each directory.
-        run: npm ci
+      - name: Install Server Dependencies and Test
+        run: |
+          cd server
+          npm ci
+          npm test
 
-      - name: Run tests
-        # This runs the test script from your package.json
-        run: npm test
-
+      - name: Install Worker Dependencies and Test
+        run: |
+          cd worker
+          npm ci
+          npm test
+      
   build-and-deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/head/master'
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -77,3 +93,21 @@ jobs:
           kubectl rollout restart deployment/server-deployment
           kubectl rollout restart deployment/client-deployment
           kubectl rollout restart deployment/worker-deployment
+
+#google managed SSL certs
+#apiVersion: networking.gke.io/v1
+#kind: ManagedCertificate
+#metadata:
+  #name: gke-managed-cert
+#spec:
+  #domains:
+    #- your-app.com # <-- Replace with your domain name
+#apply to the cluster
+#update ingress manifest
+
+#Production Grade:
+#Linter
+#Security Vulerbility Scanning
+#Distinct Docker Tagging
+#Staging vs Production, integration testing
+#Notifications for failing jobs
